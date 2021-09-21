@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Phone Book</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Md Faruk">
+    <style>
+        body {
+            background-color: #D3D3D3;
+        }
+
+
+        main {
+
+            font-family: tahoma;
+            font-size: large;
+            background-color: rgb(15, 15, 15);
+            margin: auto;
+            padding: 10px 20px 20px;
+            max-width: 65em;
+            color: turquoise;
+        }
+
+        section {
+            display: inline-block;
+            width: 20em;
+            vertical-align: top;
+            margin-right: 1em;
+            border-top: rgb(0, 255, 106) 2px dashed;
+
+        }
+
+        h2 {
+            color: rgb(126, 103, 231);
+        }
+
+        div {
+            margin-bottom: 1em;
+        }
+
+        button {
+            display: block;
+            margin-bottom: 0.8em;
+            margin-top: 0.8em;
+            font-family: tahoma;
+            font-size: 0.8em;
+            width: 8em;
+            padding: 10px 25px;
+            color: white;
+            background-color: #f44336;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        label {
+            margin-top: 0.5em;
+            width: 6em;
+            display: inline-block;
+        }
+
+        label.output {
+            display: block;
+            width: 100%;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border-bottom: yellowgreen 1px dashed;
+        }
+
+        input {
+            width: 50%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            display: inline-block;
+            border: 1px solid #f44336;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #3CBC8D;
+            color: white;
+            font-weight: bold;
+        }
+
+        #birthyear {
+            width: 30%;
+        }
+    </style>
+</head>
+
+<body onload="startData()">
+    <!--<button onclick="startData()">Start Data</button>-->
+    <main>
+        <h2>Phone Book</h2>
+        <section>
+            <h2>Insert / Update</h2>
+            <div>
+                <input type="hidden" id="index">
+                <label for="lastname">Last Name:</label>
+                <input type="text" id="lastname" placeholder="Last Name">
+            </div>
+            <div>
+                <label for="firstName">First name:</label>
+                <input type="text" id="firstName" class="short" placeholder="First Name">
+            </div>
+            <div>
+                <label for="phone">Phone:</label>
+                <input type="text" id="phone" placeholder="358423456789">
+            </div>
+            <div>
+                <label for="birthyear">Birth Year:</label>
+                <input type="number" id="birthyear" placeholder="YYYY">
+            </div>
+            <button onclick="save()">Save</button>
+            <button onclick="cancle()">Cancle</button>
+            <button onclick="startData()">Start Data</button>
+
+
+        </section>
+
+        <section>
+            <h2>All friends</h2>
+            <div>
+                <p><span id="friend"></span><br>
+            </div>
+            <p id="averageNdNumber"></p>
+
+        </section>
+
+        <section>
+            <h2>One friend</h2>
+            <p><span id="oneFriend"></span></p>
+
+        </section>
+    </main>
+    <script>
+        class PhoneBook {
+            constructor(lastName, firstName, phoneNumber, birthYear) {
+                this._lastName = lastName;
+                this._firstName = firstName;
+                this._phoneNumber = phoneNumber;
+                this._birthYear = birthYear;
+            }
+
+            personAge() {
+                let age = new Date().getFullYear() - this._birthYear;
+                return age;
+            }
+
+            printName() {
+                return this._firstName + ", " + this._lastName;
+            }
+
+            set lastName(ln) {
+                this._lastName = ln;
+            }
+
+            set firstName(fn) {
+                this._firstName = fn;
+            }
+
+            set phoneNumber(pn) {
+                this._phoneNumber = pn;
+            }
+
+            set birthYear(by) {
+                this._birthYear = by;
+            }
+
+            get lastName() {
+                return this._lastName;
+            }
+
+            get firstName() {
+                return this._firstName;
+            }
+            get phoneNumber() {
+                return this._phoneNumber;
+            }
+            get birthYear() {
+                return this._birthYear;
+            }
+        }
+
+        let totalFriends = {
+            allFriends: [],
+
+            saveFriend: function (frnd) {
+                this.allFriends.push(frnd);
+            },
+
+            removeFriend: function (index) {
+                this.allFriends.splice(index, 1);
+            },
+
+            ageAverage: function () {
+                let totalAge = 0;
+                for (let i = 0; i < this.allFriends.length; i++) {
+                    let frnd = this.allFriends[i];
+                    totalAge += frnd.personAge();
+                }
+                let average = totalAge / this.allFriends.length;
+                return Math.round(average);
+            }
+        };
+
+        function startData() {
+            let friend = new PhoneBook("Faruk", "Md", 358123456789, 1992);
+            totalFriends.saveFriend(friend);
+            friend = new PhoneBook("Zia", "Hq", 358123409278, 1990);
+            totalFriends.saveFriend(friend);
+            friend = new PhoneBook("Moli", "Sari", 358123475201, 1995);
+            totalFriends.saveFriend(friend);
+            print();
+            cancle();
+        }
+
+        function print() {
+            let result = document.getElementById("friend");
+            result.innerHTML = "";
+            document.getElementById("averageNdNumber").innerHTML = "";
+
+            for (let i = 0; i < totalFriends.allFriends.length; i++) {
+                let oneFriend = totalFriends.allFriends[i];
+                result.innerHTML += "<label class = 'output' onclick='printOne(" + i + ")'>" + oneFriend.printName() + "</label>";
+            }
+
+            document.getElementById("averageNdNumber").innerHTML = "Average age: " + totalFriends.ageAverage() + "<br>" +
+                "Number of friends: " + totalFriends.allFriends.length;
+            document.getElementById("oneFriend").innerHTML = "";
+        }
+
+        function printOne(index) {
+            let frnd = totalFriends.allFriends[index];
+
+            document.getElementById("oneFriend").innerHTML = frnd.firstName + ", " + frnd.lastName + "<br>" +
+                "phone: " + frnd.phoneNumber + "<br>" + "Birth Year: " + frnd.birthYear + "<br>" + "Age: " + frnd.personAge() + "<br>" +
+                "<button onclick='remove(" + index + ")'>Remove</button>" + "<button onclick='edit(" + index + ")'>Edit</button>";
+
+        }
+
+        function remove(element) {
+            totalFriends.removeFriend(element);
+            print();
+        }
+
+        function edit(element) {
+            let friend = totalFriends.allFriends[element];
+
+            document.getElementById("lastname").value = friend.lastName;
+            document.getElementById("firstName").value = friend.firstName;
+            document.getElementById("phone").value = friend.phoneNumber;
+            document.getElementById("birthyear").value = friend.birthYear;
+            document.getElementById("index").value = element;
+        }
+        function save() {
+            if (document.getElementById("index").value === "") {
+                let friend = new PhoneBook(
+                    document.getElementById("lastname").value,
+                    document.getElementById("firstName").value,
+                    document.getElementById("phone").value,
+                    Number(document.getElementById("birthyear").value)
+                );
+                totalFriends.saveFriend(friend);
+            } else {
+                let i = Number(document.getElementById("index").value);
+                let oneFriend = totalFriends.allFriends[i];
+
+                oneFriend.lastName = document.getElementById("lastname").value;
+                oneFriend.firstName = document.getElementById("firstName").value;
+                oneFriend.phoneNumber = document.getElementById("phone").value;
+                oneFriend.birthYear = Number(document.getElementById("birthyear").value);
+            }
+            print();
+            cancle();
+        }
+
+        function cancle() {
+            document.getElementById("lastname").value = "";
+            document.getElementById("firstName").value = "";
+            document.getElementById("phone").value = "";
+            document.getElementById("birthyear").value = "";
+        }
+    </script>
+</body>
+
+</html>

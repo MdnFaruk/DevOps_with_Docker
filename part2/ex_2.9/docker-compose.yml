@@ -1,0 +1,55 @@
+version: '3.5'  
+
+services: 
+    nginx: 
+      image: nginx:1.19-alpine
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf
+      ports:
+        - 80:80
+      depends_on:
+      - frontend
+      - backend  
+
+    frontend: 
+      image: front:latest
+      environment: 
+        - REACT_APP_BACKEND_URL=http://localhost:8080
+      ports:
+        - 5000:5000 
+      command: [ "serve" ,"-s", "-l", "5000" , "build" ]  
+
+    backend: 
+      image: back:latest
+      environment: 
+        - REQUEST_ORIGIN=http://localhost:5000
+        - REDIS_HOST=redisdb
+        - POSTGRES_HOST=db
+        - POSTGRES_USER=faruk
+        - POSTGRES_PASSWORD=faruk
+        - POSTGRES_DATABASE=ex26
+      ports: 
+        - 8080:8080  
+      command: [ "./server"]
+      depends_on:
+      - db 
+      - redisdb    
+        
+    redisdb: 
+      image: redis:latest
+      volumes:
+        - ./redisdata:/usr/local/etc/redis/redis.conf
+      command: [ "redis-server"]
+      
+    db:
+      image: postgres:13.2-alpine
+      restart: unless-stopped
+      environment: 
+        - POSTGRES_USER=faruk
+        - POSTGRES_PASSWORD=faruk
+        - POSTGRES_DB=ex26
+      volumes:
+        - ./database:/var/lib/postgresql/data  
+      container_name: db  
+      
+      

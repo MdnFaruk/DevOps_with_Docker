@@ -1,0 +1,27 @@
+version: '3.5'  
+
+services: 
+    frontend: 
+      image: front:latest
+      environment: 
+        - REACT_APP_BACKEND_URL=http://localhost:8080
+      ports:
+        - 5000:5000 
+      command: [ "serve" ,"-s", "-l", "5000" , "build" ]  
+
+    backend: 
+      image: back:latest
+      environment: 
+        - REQUEST_ORIGIN=http://localhost:5000
+        - REDIS_HOST=redisdb
+      ports: 
+        - 8000:8080  
+      command: [ "./server"]
+        
+
+    redisdb: 
+      image: redis:latest
+      command: [ "redis-server"]
+      
+      
+      
